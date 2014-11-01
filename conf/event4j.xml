@@ -5,33 +5,15 @@
     <listener>没有属性，只有value，value值是事件监听器的完整类名。
      -->
      
-    <!-- 完成SDKServer数据适配 
-    <event type="SDKSERVER_DATA_ADAPTER_FINISH">
-        <listener>cn.uc.g.sdk.busimonitor.processor.impl.OneHourAndroidLoginSuccRateProcessor</listener>
-        <listener>cn.uc.g.sdk.busimonitor.processor.impl.OneHourIosLoginSuccRateProcessor</listener>
+    <!-- 事件：一行数据读取完成 -->
+    <event type="ReadLineComplete">
+        <listener>cn.aofeng.event4j.example.LoginInfoCodec</listener>
     </event>
-    -->
     
-    <!-- "Android每小时登录成功率"数据处理完成 
-    <event type="ONE_HOUR_ANDROID_LOGIN_SUCC_RATE_DATA_FINISH">
-        <listener>cn.uc.g.sdk.busimonitor.monitor.impl.OneHourAndroidLoginSuccRateMonitor</listener>
+    <!-- 事件：将一行数据转换成LoginInfo对象完成 -->
+    <event type="LoginInfoCodecComplete">
+        <listener>cn.aofeng.event4j.example.LoginCountProcessor</listener>
+        <listener>cn.aofeng.event4j.example.LoginSuccessRateProcessor</listener>
     </event>
-    -->
-    <!-- "Android每小时登录成功率"告警 
-    <event type="ONE_HOUR_ANDROID_LOGIN_SUCC_RATE_ALERT">
-        <listener>cn.uc.g.sdk.busimonitor.alert.impl.OneHourAndroidLoginSuccRateAlert</listener>
-    </event>
-    -->
-    
-    <!-- "iOS每小时登录成功率"数据处理完成 
-    <event type="ONE_HOUR_IOS_LOGIN_SUCC_RATE_DATA_FINISH">
-        <listener>cn.uc.g.sdk.busimonitor.monitor.impl.OneHourIosLoginSuccRateMonitor</listener>
-    </event>
-    -->
-    <!-- "iOS每小时登录成功率"告警 
-    <event type="ONE_HOUR_IOS_LOGIN_SUCC_RATE_ALERT">
-        <listener>cn.uc.g.sdk.busimonitor.alert.impl.OneHourIosLoginSuccRateAlert</listener>
-    </event>
-    -->
 
 </events>
