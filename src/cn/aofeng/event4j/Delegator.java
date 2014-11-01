@@ -76,12 +76,9 @@ public class Delegator {
 
     
     /**
-     * 线程池任务
-     * <br>==========================
-     * <br> 公司：优视科技-游戏中心
-     * <br> 开发：NieYong <aofengblog@163.com>
-     * <br> 创建时间：2013-3-11下午3:50:30
-     * <br>==========================
+     * 线程池任务。
+     * 
+     * @author <a href="mailto:aofengblog@163.com">聂勇</a>
      */
     @SuppressWarnings("unchecked")
     private static class Task implements Runnable {

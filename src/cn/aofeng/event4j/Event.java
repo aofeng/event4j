@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
- * 事件
+ * 事件。
  * 
  * @author <a href="mailto:aofengblog@163.com">聂勇</a>
  */
@@ -25,7 +25,7 @@ public class Event<T> implements Cloneable, Serializable {
     
     /**
      * 
-     * @param eventType 事件类型。参考类{@link cn.uc.g.sdk.busimonitor.constant.EventType}中的定义
+     * @param eventType 事件类型。
      * @param data 事件附带的数据。如果是非原型数据类型，必须实现clone方法并且implements Cloneable接口
      */
     public Event(String eventType, T data) {
@@ -40,7 +40,7 @@ public class Event<T> implements Cloneable, Serializable {
     /**
      * 设置事件类型
      * 
-     * @param eventType 事件类型。参考类{@link cn.uc.g.sdk.busimonitor.constant.EventType}中的定义
+     * @param eventType 事件类型。
      */
     public void setEventType(String eventType) {
         this.eventType = eventType;
