@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import cn.aofeng.common4j.ILifeCycle;
 import cn.aofeng.threadpool4j.ThreadPool;
 
 /**
@@ -14,7 +15,7 @@ import cn.aofeng.threadpool4j.ThreadPool;
  * @author <a href="mailto:aofengblog@163.com">聂勇</a>
  */
 @SuppressWarnings("rawtypes")
-public class Delegator {
+public class Delegator implements ILifeCycle {
 
     private final static Logger logger = Logger.getLogger(Delegator.class);
     
@@ -22,6 +23,14 @@ public class Delegator {
     
     public Delegator() {
         
+    }
+    
+    @Override
+    public void init() {
+        for (Iterator iterator = iterator(); iterator.hasNext();) {
+            EventListener listener = (EventListener) iterator.next();
+            listener.init();
+        }
     }
     
     /**
@@ -73,7 +82,14 @@ public class Delegator {
     public Iterator<EventListener> iterator() {
         return listeners.iterator();
     }
-
+    
+    @Override
+    public void destroy() {
+        for (Iterator iterator = iterator(); iterator.hasNext();) {
+            EventListener listener = (EventListener) iterator.next();
+            listener.destroy();
+        }
+    }
     
     /**
      * 线程池任务。

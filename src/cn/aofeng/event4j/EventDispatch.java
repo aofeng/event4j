@@ -12,16 +12,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import cn.aofeng.common4j.ILifeCycle;
 import cn.aofeng.common4j.reflection.ReflectionUtil;
 import cn.aofeng.common4j.xml.DomUtil;
 import cn.aofeng.common4j.xml.NodeParser;
+import cn.aofeng.threadpool4j.ThreadPool;
 
 /**
  * 事件调度器
  * 
  * @author <a href="mailto:aofengblog@163.com">聂勇</a>
  */
-public class EventDispatch {
+public class EventDispatch implements ILifeCycle {
 
     private final static Logger logger = Logger.getLogger(EventDispatch.class);
     
@@ -61,6 +63,10 @@ public class EventDispatch {
      */
     @SuppressWarnings({"rawtypes" })
     public void init() {
+        // 先初始化线程池
+        ThreadPool.getInstance().init();
+        
+        // 读取配置文件event4j.xml，生成事件及其监听器集合列表
         Document document = DomUtil.createDocument(_configFile);
         Element rootNode = document.getDocumentElement();
         NodeParser rootParser = new NodeParser(rootNode);
@@ -69,7 +75,7 @@ public class EventDispatch {
             NodeParser eventParset = new NodeParser(eventNode);
             String eventType = eventParset.getAttributeValue("type");
             Delegator deletator = createDelegator(eventParset);
-            
+            deletator.init();
             eventMap.put(eventType, deletator);
         }
         
@@ -77,7 +83,7 @@ public class EventDispatch {
             Iterator<Entry<String, Delegator>> delegatorIterator = iterator();
             while (delegatorIterator.hasNext()) {
                 Entry<String, Delegator> entry = (Entry<String, Delegator>) delegatorIterator.next();
-                logger.info( String.format("event %s has listeners:", entry.getKey()) );
+                logger.info( String.format("event '%s' has listeners:", entry.getKey()) );
                 Iterator<EventListener> listenerIterator = entry.getValue().iterator();
                 while (listenerIterator.hasNext()) {
                     EventListener eventListener = (EventListener) listenerIterator.next();
@@ -119,6 +125,18 @@ public class EventDispatch {
         }
         
         return deletator;
+    }
+
+    @Override
+    public void destroy() {
+        // 先关闭所有的事件
+        for (Iterator<Entry<String, Delegator>> iterator = iterator(); iterator.hasNext();) {
+            Entry<String, Delegator> entry = iterator.next();
+            entry.getValue().destroy();
+        }
+        
+        // 再关闭线程池
+        ThreadPool.getInstance().destroy();
     }
 
 }
