@@ -9,8 +9,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import cn.aofeng.threadpool4j.ThreadPool;
-
 /**
  * {@link EventDispatch}的单元测试用例
  * 
@@ -37,8 +35,7 @@ public class EventDispatchTest {
      */
     @Test
     public void testDispatch() throws InterruptedException {
-        // 初始化线程池
-        ThreadPool.getInstance().init();
+        dispatch.init();
         
         // 事件类型 TEST_TYPE_ONE有一个监听器
         String eventType1 = "TEST_TYPE_ONE";
