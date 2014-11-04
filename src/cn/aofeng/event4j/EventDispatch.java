@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,6 +31,8 @@ public class EventDispatch implements ILifeCycle {
     protected Map<String, Delegator> eventMap = new HashMap<String, Delegator>();
     
     private String _configFile = "/event4j.xml";
+    
+    protected AtomicBoolean _isStarted = new AtomicBoolean(false);
     
     private static EventDispatch instance = new EventDispatch();
     
@@ -63,6 +66,10 @@ public class EventDispatch implements ILifeCycle {
      */
     @SuppressWarnings({"rawtypes" })
     public void init() {
+        if (_isStarted.get()) {
+            return;
+        }
+        
         // 先初始化线程池
         ThreadPool.getInstance().init();
         
@@ -91,6 +98,8 @@ public class EventDispatch implements ILifeCycle {
                 }
             }
         }
+        
+        _isStarted.set(true);
     }
 
     /**
@@ -137,6 +146,8 @@ public class EventDispatch implements ILifeCycle {
         
         // 再关闭线程池
         ThreadPool.getInstance().destroy();
+        
+        _isStarted.set(false);
     }
 
 }

@@ -35,6 +35,7 @@ public class EventDispatchTest {
      */
     @Test
     public void testDispatch() throws InterruptedException {
+        dispatch._isStarted.set(false); // 必须重置标识位才能再初始化
         dispatch.init();
         
         // 事件类型 TEST_TYPE_ONE有一个监听器
@@ -99,6 +100,7 @@ public class EventDispatchTest {
      */
     @Test
     public void testInit() {
+        dispatch._isStarted.set(false); // 必须重置标识位才能再初始化
         dispatch.setConfigFile("/cn/aofeng/event4j/event4j_sample.xml");
         dispatch.init();
         
@@ -130,6 +132,7 @@ public class EventDispatchTest {
      */
     @Test
     public void testInit4AnomalousConfig() { 
+        dispatch._isStarted.set(false); // 必须重置标识位才能再初始化
         dispatch.setConfigFile("/cn/aofeng/event4j/event4j_anomalous.xml");
         dispatch.init();
         
