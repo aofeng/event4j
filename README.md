@@ -24,5 +24,4 @@
 
 2、[event4j入门指南](https://github.com/aofeng/event4j/wiki/event4j%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)。
 
-3、[版本历史](https://github.com/aofeng/threadpool4j/wiki/%E7%89%88%E6%9C%AC%E5%8E%86%E5%8F%B2)。
-
+3、[版本历史](https://github.com/aofeng/event4j/wiki/%E7%89%88%E6%9C%AC%E5%8E%86%E5%8F%B2)。
