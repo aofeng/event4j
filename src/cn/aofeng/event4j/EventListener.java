@@ -13,10 +13,27 @@ import cn.aofeng.common4j.ILifeCycle;
 public interface EventListener<T> extends ILifeCycle {
     
     /**
+     * 默认线程池的名称: default。
+     */
+    public final static String DEFAULT_THREAD_POOL_NAME = "default";
+    
+    /**
      * 处理事件
      * 
      * @param event 事件及附带的数据
      */
     public void execute(Event<T> event);
+    
+    /**
+     * 设置事件监听器运行时的线程池的名称。
+     * @param threadPoolName 事件监听器运行时的线程池的名称。
+     */
+    public void setThreadPoolName(String threadPoolName);
+    
+    /**
+     * 通过在配置文件event4j.xml中配置，每个事件监听器运行时可以指定在某一个线程池中执行，此方法用于获取事件监听器运行时指定的线程池的名称。
+     * @return 事件监听器运行时指定的线程池的名称。
+     */
+    public String getThreadPoolName();
 
 }

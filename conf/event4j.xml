@@ -12,8 +12,8 @@
     
     <!-- 事件：将一行数据转换成LoginInfo对象完成 -->
     <event type="LoginInfoCodecComplete">
-        <listener>cn.aofeng.event4j.example.LoginCountProcessor</listener>
-        <listener>cn.aofeng.event4j.example.LoginSuccessRateProcessor</listener>
+        <listener threadpool="account">cn.aofeng.event4j.example.LoginCountProcessor</listener>
+        <listener threadpool="account">cn.aofeng.event4j.example.LoginSuccessRateProcessor</listener>
     </event>
 
 </events>

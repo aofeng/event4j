@@ -7,6 +7,8 @@ package cn.aofeng.event4j;
  */
 public class EventListenerMock implements EventListener<DataObj> {
 
+    private String _threadPoolName;
+    
     @Override
     public void init() {
         // nothing
@@ -20,6 +22,16 @@ public class EventListenerMock implements EventListener<DataObj> {
     @Override
     public void execute(Event<DataObj> event) {
         // nothing
+    }
+    
+    @Override
+    public void setThreadPoolName(String threadPoolName) {
+        _threadPoolName = threadPoolName;
+    }
+    
+    @Override
+    public String getThreadPoolName() {
+        return _threadPoolName;
     }
 
 }

@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import cn.aofeng.common4j.ILifeCycle;
+import cn.aofeng.common4j.lang.StringUtil;
 import cn.aofeng.common4j.reflection.ReflectionUtil;
 import cn.aofeng.common4j.xml.DomUtil;
 import cn.aofeng.common4j.xml.NodeParser;
@@ -124,12 +125,18 @@ public class EventDispatch implements ILifeCycle {
         
         List<Node> listenerNodes = nodeParser.getChildNodes();
         for (Node listenerNode : listenerNodes) {
-            EventListener<?> listener = createListener(StringUtils.trim(listenerNode.getTextContent()));
+            NodeParser listenerParser = new NodeParser(listenerNode);
+            String threadPoolName = listenerParser.getAttributeValue("threadpool");
+            if (StringUtil.isBlank(threadPoolName)) {
+                threadPoolName = EventListener.DEFAULT_THREAD_POOL_NAME;
+            }
+            
+            EventListener<?> listener = createListener( StringUtils.trim(listenerParser.getValue()) );
             if (null == listener) {
                 logger.warn(String.format("create event listener '%s' fail, please check configure file '%s'", listenerNode.getTextContent(), _configFile));
                 continue;
             }
-
+            listener.setThreadPoolName(threadPoolName);
             deletator.addListener(listener);
         }
         

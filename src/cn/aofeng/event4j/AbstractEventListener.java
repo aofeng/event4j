@@ -2,6 +2,8 @@ package cn.aofeng.event4j;
 
 import org.apache.log4j.Logger;
 
+import cn.aofeng.common4j.lang.StringUtil;
+
 /**
  * 抽象事件监听器
  * 
@@ -10,6 +12,35 @@ import org.apache.log4j.Logger;
 public abstract class AbstractEventListener<T> implements EventListener<T> {
 
     protected final Logger logger = Logger.getLogger(this.getClass());
+    
+    /** 事件监听器运行时指定的线程池的名称 */
+    protected String _threadPoolName;
+    
+    /**
+     * 设置运行时的线程池为default。
+     */
+    public AbstractEventListener() {
+        _threadPoolName = DEFAULT_THREAD_POOL_NAME;
+    }
+    
+    /**
+     * @param threadPoolName 运行时的线程池名称。
+     */
+    public AbstractEventListener(String threadPoolName) {
+        if (StringUtil.isBlank(threadPoolName)) {
+            throw new IllegalArgumentException("invalid thread-pool name:"+threadPoolName);
+        }
+        
+        _threadPoolName = threadPoolName;
+    }
+    
+    public void setThreadPoolName(String threadPoolName) {
+        _threadPoolName = threadPoolName;
+    }
+    
+    public String getThreadPoolName() {
+        return _threadPoolName;
+    }
     
     @Override
     public void init() {

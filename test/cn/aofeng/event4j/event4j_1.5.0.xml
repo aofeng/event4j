@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events>
+    <!-- 
+    1.5.0版本的配置文件。
+    <event>中的type属性表示事件类型，可以有1至多个listener。
+    <listener>没有属性，只有value，value值是事件监听器的完整类名。
+     -->
+     
+    <event type="TEST_TYPE_ONE">
+        <listener>cn.aofeng.event4j.EventListenerMock</listener>
+    </event>
+    
+    <event type="TEST_TYPE_TWO">
+        <listener threadpool="mock">cn.aofeng.event4j.EventListenerMock</listener>
+        <listener threadpool="test">cn.aofeng.event4j.EventListenerMock2</listener>
+    </event>
+
+</events>

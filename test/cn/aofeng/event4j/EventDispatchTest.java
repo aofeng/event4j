@@ -3,6 +3,7 @@ package cn.aofeng.event4j;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -96,8 +97,10 @@ public class EventDispatchTest {
      * <ul>
      *     <li>事件TEST_TYPE_ONE有一个事件监听器</li>
      *     <li>事件TEST_TYPE_TWO有两个事件监听器</li>
+     *     <li>每一个事件监听器运行时的线程池名称为default</li>
      * </ul>
      */
+    @SuppressWarnings("rawtypes")
     @Test
     public void testInit() {
         dispatch._isStarted.set(false); // 必须重置标识位才能再初始化
@@ -109,10 +112,24 @@ public class EventDispatchTest {
         assertNotNull(deletator);
         assertEquals(1, deletator.getListenerCount());
         
+        // 事件TEST_TYPE_ONE的事件监听器的运行时线程池的名称为default
+        Iterator<EventListener> iterator = deletator.iterator();
+        while (iterator.hasNext()) {
+            EventListener eventListener = (EventListener) iterator.next();
+            assertEquals(EventListener.DEFAULT_THREAD_POOL_NAME, eventListener.getThreadPoolName());
+        }
+        
         // 事件TEST_TYPE_TWO有两个事件监听器
         deletator = dispatch.eventMap.get("TEST_TYPE_TWO");
         assertNotNull(deletator);
         assertEquals(2, deletator.getListenerCount());
+        
+        // 事件TEST_TYPE_TWO的事件监听器的运行时线程池的名称为default
+        iterator = deletator.iterator();
+        while (iterator.hasNext()) {
+            EventListener eventListener = (EventListener) iterator.next();
+            assertEquals(EventListener.DEFAULT_THREAD_POOL_NAME, eventListener.getThreadPoolName());
+        }
     }
 
     /**
@@ -150,6 +167,56 @@ public class EventDispatchTest {
         deletator = dispatch.eventMap.get("TEST_TYPE_FIVE");
         assertNotNull(deletator);
         assertEquals(0, deletator.getListenerCount());
+    }
+
+    /**
+     * 测试用例：载入符合要求的事件监听器配置内容（版本1.5.0的配置） <br/>
+     * 前置条件：配置文件中有两个事件类型 <br/>
+     * <ul>
+     *     <li>事件TEST_TYPE_ONE配置有一个事件监听器</li>
+     *     <li>事件TEST_TYPE_TWO配置有两个事件监听器</li>
+     * </ul>
+     * 结果：从配置文件载入内容解析后 <br/>
+     * <ul>
+     *     <li>事件TEST_TYPE_ONE有一个事件监听器</li>
+     *     <li>事件TEST_TYPE_TWO有两个事件监听器</li>
+     *     <li>事件监听器运行时的线程池名称与配置文件event4j_1.5.0.xml中一致</li>
+     * </ul>
+     */
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void testInit4Ver1_5_0() {
+        dispatch._isStarted.set(false); // 必须重置标识位才能再初始化
+        dispatch.setConfigFile("/cn/aofeng/event4j/event4j_1.5.0.xml");
+        dispatch.init();
+        
+        // 事件TEST_TYPE_ONE有一个事件监听器
+        Delegator deletator = dispatch.eventMap.get("TEST_TYPE_ONE");
+        assertNotNull(deletator);
+        assertEquals(1, deletator.getListenerCount());
+        
+        // 事件TEST_TYPE_ONE的事件监听器的运行时线程池的名称为default
+        Iterator<EventListener> iterator = deletator.iterator();
+        while (iterator.hasNext()) {
+            EventListener eventListener = (EventListener) iterator.next();
+            assertEquals(EventListener.DEFAULT_THREAD_POOL_NAME, eventListener.getThreadPoolName());
+        }
+        
+        // 事件TEST_TYPE_TWO有两个事件监听器
+        deletator = dispatch.eventMap.get("TEST_TYPE_TWO");
+        assertNotNull(deletator);
+        assertEquals(2, deletator.getListenerCount());
+        
+        // 事件TEST_TYPE_TWO的事件监听器的运行时线程池的名称检查
+        iterator = deletator.iterator();
+        while (iterator.hasNext()) {
+            EventListener eventListener = (EventListener) iterator.next();
+            if ( "cn.aofeng.event4j.EventListenerMock".equals( eventListener.getClass().getName() ) ) {
+                assertEquals("mock", eventListener.getThreadPoolName());
+            } else if ( "cn.aofeng.event4j.EventListenerMock2".equals( eventListener.getClass().getName() ) ) {
+                assertEquals("test", eventListener.getThreadPoolName());
+            }
+        } // end of while
     }
 
 }
