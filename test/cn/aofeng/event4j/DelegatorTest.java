@@ -1,13 +1,17 @@
  package cn.aofeng.event4j;
 
 import static org.junit.Assert.*;
+import static org.easymock.EasyMock.*;
 
-import org.easymock.EasyMock;
+import java.util.concurrent.Future;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.sun.jmx.snmp.tasks.Task;
 
 import cn.aofeng.threadpool4j.ThreadPool;
 
@@ -29,6 +33,7 @@ public class DelegatorTest {
     @Before
     public void setUp() throws Exception {
         _deletator = new Delegator();
+        _deletator._threadPool = ThreadPool.getInstance();
     }
 
     @After
@@ -48,7 +53,7 @@ public class DelegatorTest {
      */
     @Test
     public void testAddListener() {
-        _deletator.addListener(createEventListenerMock(1));
+        _deletator.addListener(createEventListener());
         
         assertEquals(1, _deletator.getListenerCount());
     }
@@ -60,7 +65,7 @@ public class DelegatorTest {
      */
     @Test
     public void testRemoveListener() {
-        EventListener<DataObj> listener = createEventListenerMock(1);
+        EventListener<DataObj> listener = createEventListener();
         _deletator._listeners.add(listener);
         
         _deletator.removeListener(listener);
@@ -84,8 +89,8 @@ public class DelegatorTest {
      */
     @Test
     public void testFire() throws InterruptedException {
-        EventListener<DataObj> mock1 = createEventListenerMock(1);
-        EventListener<DataObj> mock2 = createEventListenerMock(1);
+        EventListener<DataObj> mock1 = createEventListenerMock(1, "default");
+        EventListener<DataObj> mock2 = createEventListenerMock(1, "default");
         
         _deletator.addListener(mock1);
         _deletator.addListener(mock2);
@@ -93,7 +98,7 @@ public class DelegatorTest {
         
         Thread.sleep(1*1000); // 数据是异步处理，需等待一会儿才能校验数据
         
-        EasyMock.verify(mock1, mock2);
+        verify(mock1, mock2);
     }
     
     /**
@@ -103,15 +108,15 @@ public class DelegatorTest {
      */
     @Test
     public void testFire4EventDefaultClone() throws InterruptedException {
-        EventListener<DataObj> listenerMock = createEventListenerMock(1);
+        EventListener<DataObj> listenerMock = createEventListenerMock(1, "default");
         _deletator.addListener(listenerMock);
-        Event<DataObj> eventMock = createEvent(1);
+        Event<DataObj> eventMock = createEventMock(1);
         _deletator.fire(eventMock);
         
         Thread.sleep(1*1000); // 数据是异步处理，需等待一会儿才能校验数据
         
-        EasyMock.verify(listenerMock);
-        EasyMock.verify(eventMock);
+        verify(listenerMock);
+        verify(eventMock);
     }
     
     /**
@@ -122,15 +127,15 @@ public class DelegatorTest {
     @Test
     public void testFire4EventSetClone() throws InterruptedException {
         _deletator.setNeedClone(true);
-        EventListener<DataObj> listenerMock = createEventListenerMock(1);
+        EventListener<DataObj> listenerMock = createEventListenerMock(1, "default");
         _deletator.addListener(listenerMock);
-        Event<DataObj> eventMock = createEvent(1);
+        Event<DataObj> eventMock = createEventMock(1);
         _deletator.fire(eventMock);
         
         Thread.sleep(1*1000); // 数据是异步处理，需等待一会儿才能校验数据
         
-        EasyMock.verify(listenerMock);
-        EasyMock.verify(eventMock);
+        verify(listenerMock);
+        verify(eventMock);
     }
     
     /**
@@ -141,17 +146,17 @@ public class DelegatorTest {
     @Test
     public void testFire4EventNotClone() throws InterruptedException {
         _deletator.setNeedClone(false);
-        EventListener<DataObj> listenerMock = createEventListenerMock(1);
+        EventListener<DataObj> listenerMock = createEventListenerMock(1, "default");
         _deletator.addListener(listenerMock);
-        Event<DataObj> eventMock = createEvent(1);
+        Event<DataObj> eventMock = createEventMock(1);
         _deletator.fire(eventMock);
         
         Thread.sleep(1*1000); // 数据是异步处理，需等待一会儿才能校验数据
         
-        EasyMock.verify(listenerMock);
+        verify(listenerMock);
         boolean occursError = false;
         try {
-            EasyMock.verify(eventMock);
+            verify(eventMock);
         } catch (AssertionError e) {
             occursError = true;
             assertTrue(e.getMessage().endsWith("Event.clone(): expected: 1, actual: 0"));
@@ -159,13 +164,45 @@ public class DelegatorTest {
         assertTrue("设置事件不执行clone操作，结果执行了1次clone", occursError);
     }
     
+    /**
+     * 测试用例：通知所有注册的监听器 <br/>
+     * 前置条件：注册一个监听器并分派事件给它；监听器有指定线程池为"other" <br/>
+     * 结果：监听器都被调用1次，在名称为"other"的线程池中执行。
+     */
+    @Test
+    public void testFire4ThreadPool() throws InterruptedException {
+        _deletator._threadPool = createThreadPoolMock("other", 1);
+        
+        EventListener<DataObj> listener = createEventListener();
+        listener.setThreadPoolName("other");
+        _deletator.addListener(listener);
+        Event<DataObj> event = createEvent();
+        _deletator.fire(event);
+        
+        Thread.sleep(1*1000); // 数据是异步处理，需等待一会儿才能校验数据
+        
+        verify(_deletator._threadPool);
+    }
+    
+    private Event<DataObj> createEvent() {
+        return new Event<DataObj>("EventType", new DataObj());
+    }
+    
+    private EventListener<DataObj> createEventListener() {
+        return new AbstractEventListener<DataObj>() {
+            @Override
+            public void execute(Event<DataObj> event) {
+            }
+        };
+    }
+    
     @SuppressWarnings("unchecked")
-    private Event<DataObj> createEvent(int cloneCallTimes) {
-        Event<DataObj> mock = EasyMock.createMock(Event.class);
+    private Event<DataObj> createEventMock(int cloneCallTimes) {
+        Event<DataObj> mock = createMock(Event.class);
         mock.clone();
-        EasyMock.expectLastCall().andReturn( EasyMock.createMock(Event.class))
+        expectLastCall().andReturn( createMock(Event.class))
                 .times(cloneCallTimes);
-        EasyMock.replay(mock);
+        replay(mock);
         
         return mock;
     }
@@ -176,11 +213,23 @@ public class DelegatorTest {
      * @return {@link EventListener}的Mock
      */
     @SuppressWarnings("unchecked")
-    private EventListener<DataObj> createEventListenerMock(int callTimes) {
-        EventListener<DataObj> mock = EasyMock.createMock(EventListener.class);
-        mock.execute( EasyMock.anyObject(Event.class) );
-        EasyMock.expectLastCall().times(callTimes);
-        EasyMock.replay(mock);
+    private EventListener<DataObj> createEventListenerMock(int callTimes, String threadPoolName) {
+        EventListener<DataObj> mock = createMock(EventListener.class);
+        expect(mock.getThreadPoolName())
+            .andReturn(threadPoolName)
+            .times(callTimes);
+        mock.execute(anyObject(Event.class));
+        expectLastCall().times(callTimes);
+        replay(mock);
+        
+        return mock;
+    }
+    
+    private ThreadPool createThreadPoolMock(String threadPoolName, int callTimes) {
+        ThreadPool mock = createMock(ThreadPool.class);
+        mock.submit( anyObject(Task.class), eq(threadPoolName));
+        expectLastCall().andReturn(createMock(Future.class)).times(callTimes);
+        replay(mock);
         
         return mock;
     }

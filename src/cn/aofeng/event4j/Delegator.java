@@ -19,7 +19,7 @@ public class Delegator implements ILifeCycle {
 
     private final static Logger logger = Logger.getLogger(Delegator.class);
     
-    private ThreadPool _threadPool = ThreadPool.getInstance();
+    ThreadPool _threadPool = ThreadPool.getInstance();
     
     protected List<EventListener> _listeners = new ArrayList<EventListener>();
     protected boolean _needClone = true;
@@ -120,7 +120,7 @@ public class Delegator implements ILifeCycle {
         
         private Event _event;
         
-        private boolean _needClone;
+        private boolean _needClone;   // 将clone的工作放在线程中执行可以充分地利用多核，提升效率
         
         public Task(EventListener listener, Event event, boolean needClone) {
             _listener = listener;
