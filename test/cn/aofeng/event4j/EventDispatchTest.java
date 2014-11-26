@@ -22,7 +22,7 @@ public class EventDispatchTest {
     @Before
     public void setUp() throws Exception {
         dispatch = EventDispatch.getInstance();
-        dispatch.eventMap = new HashMap<String, Delegator>();
+        dispatch._eventMap = new HashMap<String, Delegator>();
     }
 
     @After
@@ -65,7 +65,7 @@ public class EventDispatchTest {
         for (EventListener<?> mock : mocks) {
             deletator.addListener(mock);
         }
-        dispatch.eventMap.put(eventType, deletator);
+        dispatch._eventMap.put(eventType, deletator);
     }
 
     @SuppressWarnings("unchecked")
@@ -108,9 +108,10 @@ public class EventDispatchTest {
         dispatch.init();
         
         // 事件TEST_TYPE_ONE有一个事件监听器
-        Delegator deletator = dispatch.eventMap.get("TEST_TYPE_ONE");
+        Delegator deletator = dispatch._eventMap.get("TEST_TYPE_ONE");
         assertNotNull(deletator);
         assertEquals(1, deletator.getListenerCount());
+        assertTrue(deletator.isNeedClone());
         
         // 事件TEST_TYPE_ONE的事件监听器的运行时线程池的名称为default
         Iterator<EventListener> iterator = deletator.iterator();
@@ -120,9 +121,10 @@ public class EventDispatchTest {
         }
         
         // 事件TEST_TYPE_TWO有两个事件监听器
-        deletator = dispatch.eventMap.get("TEST_TYPE_TWO");
+        deletator = dispatch._eventMap.get("TEST_TYPE_TWO");
         assertNotNull(deletator);
         assertEquals(2, deletator.getListenerCount());
+        assertTrue(deletator.isNeedClone());
         
         // 事件TEST_TYPE_TWO的事件监听器的运行时线程池的名称为default
         iterator = deletator.iterator();
@@ -154,19 +156,22 @@ public class EventDispatchTest {
         dispatch.init();
         
         // 事件TEST_TYPE_THREE在事件类型映射表中存在，且有一个事件监听器
-        Delegator deletator = dispatch.eventMap.get("TEST_TYPE_THREE");
+        Delegator deletator = dispatch._eventMap.get("TEST_TYPE_THREE");
         assertNotNull(deletator);
         assertEquals(1, deletator.getListenerCount());
+        assertTrue(deletator.isNeedClone());
         
         // 事件TEST_TYPE_FOUR在事件类型映射表中存在，但没有事件监听器
-        deletator = dispatch.eventMap.get("TEST_TYPE_FOUR");
+        deletator = dispatch._eventMap.get("TEST_TYPE_FOUR");
         assertNotNull(deletator);
         assertEquals(1, deletator.getListenerCount());
+        assertTrue(deletator.isNeedClone());
         
         // 事件TEST_TYPE_FIVE在事件类型映射表中不存在
-        deletator = dispatch.eventMap.get("TEST_TYPE_FIVE");
+        deletator = dispatch._eventMap.get("TEST_TYPE_FIVE");
         assertNotNull(deletator);
         assertEquals(0, deletator.getListenerCount());
+        assertTrue(deletator.isNeedClone());
     }
 
     /**
@@ -191,9 +196,10 @@ public class EventDispatchTest {
         dispatch.init();
         
         // 事件TEST_TYPE_ONE有一个事件监听器
-        Delegator deletator = dispatch.eventMap.get("TEST_TYPE_ONE");
+        Delegator deletator = dispatch._eventMap.get("TEST_TYPE_ONE");
         assertNotNull(deletator);
         assertEquals(1, deletator.getListenerCount());
+        assertTrue(deletator.isNeedClone());
         
         // 事件TEST_TYPE_ONE的事件监听器的运行时线程池的名称为default
         Iterator<EventListener> iterator = deletator.iterator();
@@ -203,9 +209,10 @@ public class EventDispatchTest {
         }
         
         // 事件TEST_TYPE_TWO有两个事件监听器
-        deletator = dispatch.eventMap.get("TEST_TYPE_TWO");
+        deletator = dispatch._eventMap.get("TEST_TYPE_TWO");
         assertNotNull(deletator);
         assertEquals(2, deletator.getListenerCount());
+        assertFalse(deletator.isNeedClone());
         
         // 事件TEST_TYPE_TWO的事件监听器的运行时线程池的名称检查
         iterator = deletator.iterator();
@@ -217,6 +224,19 @@ public class EventDispatchTest {
                 assertEquals("test", eventListener.getThreadPoolName());
             }
         } // end of while
+        
+        // 事件TEST_TYPE_THREE有一个事件监听器
+        deletator = dispatch._eventMap.get("TEST_TYPE_THREE");
+        assertNotNull(deletator);
+        assertEquals(1, deletator.getListenerCount());
+        assertTrue(deletator.isNeedClone());
+        
+        // 事件TEST_TYPE_THREE的事件监听器的运行时线程池的名称为default
+        iterator = deletator.iterator();
+        while (iterator.hasNext()) {
+            EventListener eventListener = (EventListener) iterator.next();
+            assertEquals(EventListener.DEFAULT_THREAD_POOL_NAME, eventListener.getThreadPoolName());
+        }
     }
 
 }

@@ -2,7 +2,9 @@
 <events>
     <!-- 
     1.5.0版本的配置文件。
-    <event>中的type属性表示事件类型，可以有1至多个listener。
+    <event>中的type属性表示事件类型（亦可以称之为事件名称）；
+                  clone属性表示在将事件分发至listener时，是否对事件及其数据进行clone，true表示进行clone（默认值），false表示不clone；
+                  每个event可以有1个或多个listener。
     <listener>没有属性，只有value，value值是事件监听器的完整类名。
      -->
      
@@ -10,9 +12,13 @@
         <listener>cn.aofeng.event4j.EventListenerMock</listener>
     </event>
     
-    <event type="TEST_TYPE_TWO">
+    <event type="TEST_TYPE_TWO" clone="false">
         <listener threadpool="mock">cn.aofeng.event4j.EventListenerMock</listener>
         <listener threadpool="test">cn.aofeng.event4j.EventListenerMock2</listener>
+    </event>
+    
+    <event type="TEST_TYPE_THREE" clone="true">
+        <listener>cn.aofeng.event4j.EventListenerMock</listener>
     </event>
 
 </events>

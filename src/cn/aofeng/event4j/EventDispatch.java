@@ -27,21 +27,21 @@ import cn.aofeng.threadpool4j.ThreadPool;
  */
 public class EventDispatch implements ILifeCycle {
 
-    private final static Logger logger = Logger.getLogger(EventDispatch.class);
+    private final static Logger _logger = Logger.getLogger(EventDispatch.class);
     
-    protected Map<String, Delegator> eventMap = new HashMap<String, Delegator>();
+    protected Map<String, Delegator> _eventMap = new HashMap<String, Delegator>();
     
     private String _configFile = "/event4j.xml";
     
     protected AtomicBoolean _isStarted = new AtomicBoolean(false);
     
-    private static EventDispatch instance = new EventDispatch();
+    private static EventDispatch _instance = new EventDispatch();
     
     private EventDispatch() {
     }
     
     public static EventDispatch getInstance() {
-        return instance;
+        return _instance;
     }
     
     /**
@@ -50,15 +50,15 @@ public class EventDispatch implements ILifeCycle {
      * @param event 事件
      */
     public void dispatch(Event<?> event) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("dispatch event:"+event);
+        if (_logger.isDebugEnabled()) {
+            _logger.debug("dispatch event:"+event);
         }
         
-        Delegator delegator = eventMap.get(event.getEventType());
+        Delegator delegator = _eventMap.get(event.getEventType());
         if (null != delegator) {
             delegator.fire(event);
         } else {
-            logger.warn( String.format("event %s has no listener", event.toString()) );
+            _logger.warn( String.format("event %s has no listener", event.toString()) );
         }
     }
     
@@ -84,18 +84,18 @@ public class EventDispatch implements ILifeCycle {
             String eventType = eventParset.getAttributeValue("type");
             Delegator deletator = createDelegator(eventParset);
             deletator.init();
-            eventMap.put(eventType, deletator);
+            _eventMap.put(eventType, deletator);
         }
         
-        if (logger.isInfoEnabled()) {
+        if (_logger.isInfoEnabled()) {
             Iterator<Entry<String, Delegator>> delegatorIterator = iterator();
             while (delegatorIterator.hasNext()) {
                 Entry<String, Delegator> entry = (Entry<String, Delegator>) delegatorIterator.next();
-                logger.info( String.format("event '%s' has listeners:", entry.getKey()) );
+                _logger.info( String.format("event '%s' has listeners:", entry.getKey()) );
                 Iterator<EventListener> listenerIterator = entry.getValue().iterator();
                 while (listenerIterator.hasNext()) {
                     EventListener eventListener = (EventListener) listenerIterator.next();
-                    logger.info("    "+eventListener.getClass().getName());
+                    _logger.info("    "+eventListener.getClass().getName());
                 }
             }
         }
@@ -109,7 +109,7 @@ public class EventDispatch implements ILifeCycle {
      * @return 事件及其监听器列表的历遍器
      */
     public Iterator<Entry<String, Delegator>> iterator() {
-        return eventMap.entrySet().iterator();
+        return _eventMap.entrySet().iterator();
     }
     
     public void setConfigFile(String classpathFile) {
@@ -122,6 +122,9 @@ public class EventDispatch implements ILifeCycle {
     
     private Delegator createDelegator(NodeParser nodeParser) {
         Delegator deletator = new Delegator();
+        String cloneVal = nodeParser.getAttributeValue("clone");
+        deletator.setNeedClone( Boolean.parseBoolean( 
+                StringUtil.isEmpty(cloneVal) ? "true" : cloneVal) );
         
         List<Node> listenerNodes = nodeParser.getChildNodes();
         for (Node listenerNode : listenerNodes) {
@@ -133,7 +136,7 @@ public class EventDispatch implements ILifeCycle {
             
             EventListener<?> listener = createListener( StringUtils.trim(listenerParser.getValue()) );
             if (null == listener) {
-                logger.warn(String.format("create event listener '%s' fail, please check configure file '%s'", listenerNode.getTextContent(), _configFile));
+                _logger.warn(String.format("create event listener '%s' fail, please check configure file '%s'", listenerNode.getTextContent(), _configFile));
                 continue;
             }
             listener.setThreadPoolName(threadPoolName);

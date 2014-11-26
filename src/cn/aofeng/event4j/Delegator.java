@@ -19,7 +19,9 @@ public class Delegator implements ILifeCycle {
 
     private final static Logger logger = Logger.getLogger(Delegator.class);
     
-    protected List<EventListener> listeners = new ArrayList<EventListener>();
+    protected boolean _needClone = true;
+    
+    protected List<EventListener> _listeners = new ArrayList<EventListener>();
     
     public Delegator() {
         
@@ -40,7 +42,7 @@ public class Delegator implements ILifeCycle {
      * @return 注册成功返回true；注册失败返回false
      */
     public boolean addListener(EventListener listener) {
-        return listeners.add(listener);
+        return _listeners.add(listener);
     }
     
     /**
@@ -50,7 +52,7 @@ public class Delegator implements ILifeCycle {
      * @return 移除成功返回true；移除失败返回false
      */
     public boolean removeListener(EventListener listener) {
-        return listeners.remove(listener);
+        return _listeners.remove(listener);
     }
 
     /**
@@ -59,7 +61,7 @@ public class Delegator implements ILifeCycle {
      * @return 监听器数量
      */
     public int getListenerCount() {
-        return listeners.size();
+        return _listeners.size();
     }
     
     /**
@@ -68,9 +70,9 @@ public class Delegator implements ILifeCycle {
      * @param event 事件
      */
     public void fire(final Event event) {
-        for (final EventListener listener : listeners) {
+        for (final EventListener listener : _listeners) {
             ThreadPool.getInstance().submit(
-                    new Task(listener, event));
+                    new Task(listener, event, _needClone));
         }
     }
 
@@ -80,7 +82,20 @@ public class Delegator implements ILifeCycle {
      * @return 事件监听器列表的历遍器
      */
     public Iterator<EventListener> iterator() {
-        return listeners.iterator();
+        return _listeners.iterator();
+    }
+    
+    /**
+     * 获取事件在分派时是否clone一份交给事件监听器
+     * 
+     * @return 事件在分派时是否clone一份交给事件监听器
+     */
+    public boolean isNeedClone() {
+        return _needClone;
+    }
+    
+    public void setNeedClone(boolean needClone) {
+        _needClone = needClone;
     }
     
     @Override
@@ -99,31 +114,38 @@ public class Delegator implements ILifeCycle {
     @SuppressWarnings("unchecked")
     private static class Task implements Runnable {
 
-        private EventListener listener;
+        private EventListener _listener;
         
-        private Event event;
+        private Event _event;
         
-        public Task(EventListener listener, Event event) {
-            this.listener = listener;
-            this.event = event;
+        private boolean _needClone;
+        
+        public Task(EventListener listener, Event event, boolean needClone) {
+            _listener = listener;
+            _event = event;
+            _needClone = needClone;
         }
         
         @Override
         public void run() {
             try {
-                this.listener.execute(event.clone());
+                if (_needClone) {
+                    _listener.execute(_event.clone());
+                } else {
+                    _listener.execute(_event);
+                }
             } catch (Exception e) {
                 logger.error( String.format("execute listener %s occurs error", 
-                        this.listener.getClass().getSimpleName()), e);
+                        this._listener.getClass().getSimpleName()), e);
             }
         }
         
         public String toString() {
-            if (null == this.event) {
+            if (null == this._event) {
                 return "null";
             }
             
-            return this.event.toString();
+            return this._event.toString();
         }
     } // end of class 'Task'
 
