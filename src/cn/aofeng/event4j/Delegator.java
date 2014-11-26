@@ -19,9 +19,10 @@ public class Delegator implements ILifeCycle {
 
     private final static Logger logger = Logger.getLogger(Delegator.class);
     
-    protected boolean _needClone = true;
+    private ThreadPool _threadPool = ThreadPool.getInstance();
     
     protected List<EventListener> _listeners = new ArrayList<EventListener>();
+    protected boolean _needClone = true;
     
     public Delegator() {
         
@@ -67,12 +68,13 @@ public class Delegator implements ILifeCycle {
     /**
      * 通知所有注册的事件监听器处理事件
      * 
-     * @param event 事件
+     * @param event 事件及其数据
      */
     public void fire(final Event event) {
         for (final EventListener listener : _listeners) {
-            ThreadPool.getInstance().submit(
-                    new Task(listener, event, _needClone));
+            _threadPool.submit(
+                    new Task(listener, event, _needClone),
+                    listener.getThreadPoolName());
         }
     }
 
