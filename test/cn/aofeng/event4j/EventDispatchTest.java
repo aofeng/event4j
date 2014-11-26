@@ -1,5 +1,10 @@
 package cn.aofeng.event4j;
 
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.*;
 
 import java.util.HashMap;
@@ -41,7 +46,7 @@ public class EventDispatchTest {
         
         // 事件类型 TEST_TYPE_ONE有一个监听器
         String eventType1 = "TEST_TYPE_ONE";
-        EventListener<?> mock1 = createEventListenerMock(1);
+        EventListener<?> mock1 = createEventListenerMock(1, "default");
         addDelegatorWithEventListener(eventType1, mock1);
         
         dispatch.dispatch(createEvent(eventType1));
@@ -50,8 +55,8 @@ public class EventDispatchTest {
         
         // 事件类型 TEST_TYPE_TWO有两个监听器
         String eventType2 = "TEST_TYPE_TWO";
-        EventListener<?> mock2 = createEventListenerMock(1);
-        EventListener<?> mock3 = createEventListenerMock(1);
+        EventListener<?> mock2 = createEventListenerMock(1, "default");
+        EventListener<?> mock3 = createEventListenerMock(1, "default");
         addDelegatorWithEventListener(eventType2, mock2, mock3);
         
         dispatch.dispatch(createEvent(eventType2));
@@ -67,17 +72,25 @@ public class EventDispatchTest {
         }
         dispatch._eventMap.put(eventType, deletator);
     }
-
+    
+    /**
+     * 创建{@link EventListener}的Mock。
+     * @param callTimes 事件被调用的次数
+     * @return {@link EventListener}的Mock
+     */
     @SuppressWarnings("unchecked")
-    private EventListener<?> createEventListenerMock(int callTimes) {
-        EventListener<?> mock = EasyMock.createMock(EventListener.class);
-        mock.execute( EasyMock.anyObject(Event.class) );
-        EasyMock.expectLastCall().times(callTimes);
-        EasyMock.replay(mock);
+    private EventListener<DataObj> createEventListenerMock(int callTimes, String threadPoolName) {
+        EventListener<DataObj> mock = createMock(EventListener.class);
+        expect(mock.getThreadPoolName())
+            .andReturn(threadPoolName)
+            .times(callTimes);
+        mock.execute(anyObject(Event.class));
+        expectLastCall().times(callTimes);
+        replay(mock);
         
         return mock;
     }
-
+    
     @SuppressWarnings("rawtypes")
     private Event createEvent(String eventType) {
         Event event = new Event();
