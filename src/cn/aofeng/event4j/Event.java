@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
- * 事件。
+ * 事件及其数据。
  * 
  * @author <a href="mailto:aofengblog@163.com">聂勇</a>
  */
@@ -46,6 +46,11 @@ public class Event<T> implements Cloneable, Serializable {
         this.eventType = eventType;
     }
 
+    /**
+     * 获取事件附带的数据
+     * 
+     * @return 事件附带的数据
+     */
     public T getData() {
         return data;
     }
