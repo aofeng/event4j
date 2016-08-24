@@ -40,18 +40,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <events>
     <!-- 
-    <event>中的type属性表示事件类型，可以有1至多个listener。
-    <listener>没有属性，只有value，value值是事件监听器的完整类名。
+    <event>中的type属性表示事件类型（亦可以称之为事件名称）；
+                  clone属性表示在将事件分发至listener时，是否对事件及其数据进行clone，true表示进行clone（默认值），false表示不clone；
+                  每个event可以有1个或多个listener。
+    <listener>中的threadpool属性表示当前监听器由哪个线程池执行。如果没有该属性，表示交给default线程池执行。
+                      value值是事件监听器的完整类名。
      -->
      
     <!-- 事件：完成读取一行 -->
-    <event type="ReadLineComplete">
+    <event type="ReadLineComplete"  clone="false">
         <listener>cn.aofeng.event4j.example.LoginInfoCodec</listener>
     </event>
     
     <!-- 事件：完成格式转换 -->
-    <event type="LoginInfoCodecComplete">
-        <listener>cn.aofeng.event4j.example.LoginCountProcessor</listener>
+    <event type="LoginInfoCodecComplete"  clone="false">
+        <listener  threadpool="default">cn.aofeng.event4j.example.LoginCountProcessor</listener>
         <listener>cn.aofeng.event4j.example.LoginSuccessRateProcessor</listener>
     </event>
 
