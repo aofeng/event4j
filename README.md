@@ -20,8 +20,8 @@
 
 #文档
 
-1、[编译event4j](https://github.com/aofeng/event4j/wiki/%E7%BC%96%E8%AF%91event4j)。
+1、[编译event4j](doc/guide/01-compile.md)。
 
-2、[event4j入门指南](https://github.com/aofeng/event4j/wiki/event4j%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97)。
+2、[event4j入门指南](doc/guide/02-guide.md)。
 
-3、[版本历史](https://github.com/aofeng/event4j/wiki/%E7%89%88%E6%9C%AC%E5%8E%86%E5%8F%B2)。
+3、[版本历史](doc/guide/03-history.md)。
