@@ -66,7 +66,6 @@
 // 1. 初始化event4j
 EventDispatch.getInstance().init();
 
-// 2. 事件分派
 BufferedReader reader = null;
 String line = "";
 try {
@@ -77,6 +76,7 @@ try {
         if (StringUtils.isBlank(line)) {
             continue;
         }
+        // 2. 事件分派
         Event<String> event = new Event<String>("ReadLineComplete", line);
         EventDispatch.getInstance().dispatch(event);
     } while (null != line);
