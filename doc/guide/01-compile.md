@@ -13,6 +13,6 @@ git clone https://github.com/aofeng/event4j
 ant
 ```
 会生成一个dist目录，下面有两个文件。如：
-> event4j-1.0.0-src.jar    源码jar
+> event4j-1.5.0-src.jar    源码jar
 >
-> event4j-1.0.0.jar        用于发布的二进制jar
+> event4j-1.5.0.jar        用于发布的二进制jar
