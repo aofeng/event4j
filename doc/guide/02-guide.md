@@ -9,7 +9,8 @@
 2、实现一个格式转换器，监听事件“完成读取一行”。完成格式转换后，产生一个“完成格式转换（`LoginInfoCodecComplete`）”的事件。
 
 3、实现两个数据处理器：登陆次数统计器、登陆成功率统计器，它们监听事件“完成格式转换”。
-![event4j](http://img2.ph.126.net/mseLTsjjlx5KyhFICGeh2g==/640355572034101652.png)
+
+![event4j](doc/guide/images/event4j-example-01.png)
 
 ###编写程序
 ####1、依赖关系及其配置。
