@@ -10,7 +10,7 @@
 
 3、实现两个数据处理器：登陆次数统计器、登陆成功率统计器，它们监听事件“完成格式转换”。
 
-![event4j](doc/guide/images/event4j-example-01.png)
+![event4j](images/event4j-example-01.png)
 
 ###编写程序
 ####1、依赖关系及其配置。
