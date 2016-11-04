@@ -14,7 +14,7 @@
         <listener></listener>
     </event>
     
-    <event type="TEST_TYPE_FIVE">
+    <event type="TEST_TYPE_FIVE" clone="true">
         <listener>cn.aofeng.event4j.NotExist</listener>
     </event>
 

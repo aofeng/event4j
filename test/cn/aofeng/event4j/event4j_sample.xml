@@ -9,7 +9,7 @@
         <listener>cn.aofeng.event4j.EventListenerMock</listener>
     </event>
     
-    <event type="TEST_TYPE_TWO">
+    <event type="TEST_TYPE_TWO" clone="true">
         <listener>cn.aofeng.event4j.EventListenerMock</listener>
         <listener>cn.aofeng.event4j.EventListenerMock</listener>
     </event>

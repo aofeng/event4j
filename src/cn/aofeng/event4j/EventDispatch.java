@@ -128,7 +128,7 @@ public class EventDispatch implements ILifeCycle {
         Delegator deletator = new Delegator();
         String cloneVal = nodeParser.getAttributeValue("clone");
         deletator.setNeedClone( Boolean.parseBoolean( 
-                StringUtil.isEmpty(cloneVal) ? "true" : cloneVal) );
+                StringUtil.isEmpty(cloneVal) ? "false" : cloneVal) );
         
         List<Node> listenerNodes = nodeParser.getChildNodes();
         for (Node listenerNode : listenerNodes) {
