@@ -15,6 +15,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import cn.aofeng.threadpool4j.ThreadPool;
+
 /**
  * {@link EventDispatch}的单元测试用例
  * 
@@ -67,6 +69,7 @@ public class EventDispatchTest {
     private void addDelegatorWithEventListener(String eventType,
             EventListener<?>... mocks) {
         Delegator deletator = new Delegator();
+        deletator.setThreadPool( (ThreadPool) dispatch._threadpool );
         for (EventListener<?> mock : mocks) {
             deletator.addListener(mock);
         }

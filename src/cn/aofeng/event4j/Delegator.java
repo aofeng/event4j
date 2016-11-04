@@ -17,9 +17,9 @@ import cn.aofeng.threadpool4j.ThreadPool;
 @SuppressWarnings("rawtypes")
 public class Delegator implements ILifeCycle {
 
-    private final static Logger logger = Logger.getLogger(Delegator.class);
+    private final static Logger _logger = Logger.getLogger(Delegator.class);
     
-    ThreadPool _threadPool = ThreadPool.getInstance();
+    ThreadPool _threadPool;
     
     protected List<EventListener> _listeners = new ArrayList<EventListener>();
     protected boolean _needClone = true;
@@ -30,6 +30,10 @@ public class Delegator implements ILifeCycle {
     
     @Override
     public void init() {
+        if (null == _threadPool) {
+            throw new IllegalStateException("thread pool object is null, delegator initialize fail.");
+        }
+        
         for (Iterator iterator = iterator(); iterator.hasNext();) {
             EventListener listener = (EventListener) iterator.next();
             listener.init();
@@ -71,6 +75,11 @@ public class Delegator implements ILifeCycle {
      * @param event 事件及其数据
      */
     public void fire(final Event event) {
+        if (null == _threadPool) {
+            _logger.error("thread pool object is null, delegator can not dispatch task.");
+            return;
+        }
+        
         for (final EventListener listener : _listeners) {
             _threadPool.submit(
                     new Task(listener, event, _needClone),
@@ -98,6 +107,10 @@ public class Delegator implements ILifeCycle {
     
     public void setNeedClone(boolean needClone) {
         _needClone = needClone;
+    }
+    
+    void setThreadPool(ThreadPool threadPool) {
+        this._threadPool = threadPool;
     }
     
     @Override
@@ -137,7 +150,7 @@ public class Delegator implements ILifeCycle {
                     _listener.execute(_event);
                 }
             } catch (Exception e) {
-                logger.error( String.format("execute listener %s occurs error", 
+                _logger.error( String.format("execute listener %s occurs error", 
                         this._listener.getClass().getSimpleName()), e);
             }
         }

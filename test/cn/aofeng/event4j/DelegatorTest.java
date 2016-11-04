@@ -13,7 +13,9 @@ import org.junit.Test;
 
 import com.sun.jmx.snmp.tasks.Task;
 
+import cn.aofeng.common4j.ILifeCycle;
 import cn.aofeng.threadpool4j.ThreadPool;
+import cn.aofeng.threadpool4j.ThreadPoolImpl;
 
 /**
  * {@link Delegator}的单元测试用例 <br/>
@@ -24,16 +26,19 @@ public class DelegatorTest {
 
     private Delegator _deletator;
     
+    private static  ILifeCycle _threadpool;
+    
     @BeforeClass
     public static void beforeClass() {
         // 初始化线程池
-        ThreadPool.getInstance().init();
+        _threadpool = new ThreadPoolImpl();
+        _threadpool.init();
     }
     
     @Before
     public void setUp() throws Exception {
         _deletator = new Delegator();
-        _deletator._threadPool = ThreadPool.getInstance();
+        _deletator._threadPool = (ThreadPool) _threadpool;
     }
 
     @After
@@ -43,7 +48,7 @@ public class DelegatorTest {
     @AfterClass
     public static void afterClass() {
         // 销毁线程池
-        ThreadPool.getInstance().destroy();
+        _threadpool.destroy();
     }
 
     /**

@@ -19,6 +19,7 @@ import cn.aofeng.common4j.reflection.ReflectionUtil;
 import cn.aofeng.common4j.xml.DomUtil;
 import cn.aofeng.common4j.xml.NodeParser;
 import cn.aofeng.threadpool4j.ThreadPool;
+import cn.aofeng.threadpool4j.ThreadPoolImpl;
 
 /**
  * 事件调度器
@@ -31,9 +32,11 @@ public class EventDispatch implements ILifeCycle {
     
     protected Map<String, Delegator> _eventMap = new HashMap<String, Delegator>();
     
-    private String _configFile = "/event4j.xml";
+    private String _configFile = "/biz/event4j.xml";
     
     protected AtomicBoolean _isStarted = new AtomicBoolean(false);
+    
+    ILifeCycle _threadpool = new ThreadPoolImpl();
     
     private static EventDispatch _instance = new EventDispatch();
     
@@ -72,7 +75,7 @@ public class EventDispatch implements ILifeCycle {
         }
         
         // 先初始化线程池
-        ThreadPool.getInstance().init();
+        _threadpool.init();
         
         // 读取配置文件event4j.xml，生成事件及其监听器集合列表
         Document document = DomUtil.createDocument(_configFile);
@@ -83,6 +86,7 @@ public class EventDispatch implements ILifeCycle {
             NodeParser eventParset = new NodeParser(eventNode);
             String eventType = eventParset.getAttributeValue("type");
             Delegator deletator = createDelegator(eventParset);
+            deletator.setThreadPool( (ThreadPool) _threadpool );
             deletator.init();
             _eventMap.put(eventType, deletator);
         }
@@ -155,7 +159,7 @@ public class EventDispatch implements ILifeCycle {
         }
         
         // 再关闭线程池
-        ThreadPool.getInstance().destroy();
+        _threadpool.destroy();
         
         _isStarted.set(false);
     }
