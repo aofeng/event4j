@@ -1,13 +1,10 @@
-编译event4j
-===
-1、获取event4j源码。
----
+# 编译event4j
+## 1、获取event4j源码。
 ```shell
 git clone https://github.com/aofeng/event4j
 ```
 
-2、编译源码生成jar。
----
+## 2、编译源码生成jar。
 进入项目根目录，执行ant脚本：
 ```shell
 ant

@@ -1,9 +1,10 @@
-#event4j入门指南
+# event4j入门指南
 为了更好地理解event4j，通过实现一个实例来展示event4j的用途：
-##用例
+
+## 用例
 有一个日志文件LoginInfoRecords.txt，里面记录着用户的登陆信息，每行共4个字段，用符号“\`”隔开，分别是：登陆时间、来源IP、账号、登陆结果。从日志文件中统计总登陆次数和登陆成功率。
 
-##实现思路
+## 实现思路
 1、实现一个文件读取器，按行读取。每读取一行，产生一个“完成读取一行（`ReadLineComplete`）”的事件。
 
 2、实现一个格式转换器，监听事件“完成读取一行”。完成格式转换后，产生一个“完成格式转换（`LoginInfoCodecComplete`）”的事件。
@@ -12,15 +13,15 @@
 
 ![event4j](images/event4j-example-01.png)
 
-###编写程序
-####1、依赖关系及其配置。
+### 编写程序
+#### 1、依赖关系及其配置。
 `event4j`依赖`threadpool4j`，需要的jar列表如下：
 * common4j-0.1.0.jar
 * commons-lang-2.6.jar
 * log4j-1.2.16.jar
 * threadpool4j-1.0.0.jar
 
-####2、配置threadpool4j。
+#### 2、配置threadpool4j。
 在应用的CLASSPATH的任意路径（如：应用的classes目录）下新文本文件建threadpool4j.xml，其内容如下：
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -35,7 +36,7 @@
 </threadpool4j>
 ```
 
-####3、配置event4j。
+#### 3、配置event4j。
 在应用的CLASSPATH的任意路径（如：应用的classes目录）下新建文本文件event4j.xml的配置文件，其内容如下：
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -62,7 +63,7 @@
 </events>
 ```
 
-####4、实现文件读取器。
+#### 4、实现文件读取器。
 ```java
 // 1. 初始化event4j
 EventDispatch.getInstance().init();
@@ -97,7 +98,7 @@ EventDispatch.getInstance().destroy();
 其源码可查看文件[Event4JExample.java](https://github.com/aofeng/event4j/blob/master/example/cn/aofeng/event4j/example/Event4JExample.java)
 
 
-####5、实现格式转换器。
+#### 5、实现格式转换器。
 ```java
 /**
  * 数据转换器：将一行字符串转换成{@link LoginInfo}对象。
@@ -131,7 +132,7 @@ public class LoginInfoCodec extends AbstractEventListener<String> {
 ```
 其源码可查看文件[LoginInfoCodec.java](https://github.com/aofeng/event4j/blob/master/example/cn/aofeng/event4j/example/LoginInfoCodec.java)
 
-####6、实现登陆次数统计器。
+#### 6、实现登陆次数统计器。
 ```java
 /**
  * 登陆次数统计器。
@@ -157,7 +158,7 @@ public class LoginCountProcessor extends  AbstractEventListener<LoginInfo> {
 ```
 其源码可查看文件[LoginCountProcessor.java](https://github.com/aofeng/event4j/blob/master/example/cn/aofeng/event4j/example/LoginCountProcessor.java)
 
-####7、实现登陆成功率统计器。
+#### 7、实现登陆成功率统计器。
 ```java
 /**
  * 登陆成功率统计器。
