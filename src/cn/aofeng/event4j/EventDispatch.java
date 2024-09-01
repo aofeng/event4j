@@ -8,7 +8,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,7 +29,7 @@ import cn.aofeng.threadpool4j.ThreadPoolImpl;
  */
 public class EventDispatch implements ILifeCycle {
 
-    private final static Logger _logger = Logger.getLogger(EventDispatch.class);
+    private final static Logger _logger = LoggerFactory.getLogger(EventDispatch.class);
     
     protected Map<String, Delegator> _eventMap = new HashMap<String, Delegator>();
     

@@ -11,8 +11,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.sun.jmx.snmp.tasks.Task;
-
 import cn.aofeng.common4j.ILifeCycle;
 import cn.aofeng.threadpool4j.ThreadPool;
 import cn.aofeng.threadpool4j.ThreadPoolImpl;
@@ -232,7 +230,7 @@ public class DelegatorTest {
     
     private ThreadPool createThreadPoolMock(String threadPoolName, int callTimes) {
         ThreadPool mock = createMock(ThreadPool.class);
-        mock.submit( anyObject(Task.class), eq(threadPoolName));
+        mock.submit( anyObject(Runnable.class), eq(threadPoolName));
         expectLastCall().andReturn(createMock(Future.class)).times(callTimes);
         replay(mock);
         

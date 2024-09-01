@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import cn.aofeng.common4j.ILifeCycle;
 import cn.aofeng.threadpool4j.ThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 接受事件委托人（中介）
@@ -17,7 +17,7 @@ import cn.aofeng.threadpool4j.ThreadPool;
 @SuppressWarnings("rawtypes")
 public class Delegator implements ILifeCycle {
 
-    private final static Logger _logger = Logger.getLogger(Delegator.class);
+    private final static Logger _logger = LoggerFactory.getLogger(Delegator.class);
     
     ThreadPool _threadPool;
     

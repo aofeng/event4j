@@ -1,8 +1,8 @@
 package cn.aofeng.event4j;
 
-import org.apache.log4j.Logger;
-
 import cn.aofeng.common4j.lang.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 抽象事件监听器
@@ -11,7 +11,7 @@ import cn.aofeng.common4j.lang.StringUtil;
  */
 public abstract class AbstractEventListener<T> implements EventListener<T> {
 
-    protected final Logger logger = Logger.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     /** 事件监听器运行时指定的线程池的名称 */
     protected String _threadPoolName;
